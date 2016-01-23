@@ -4,7 +4,7 @@ use std::sync::{mpsc, Mutex, Arc, MutexGuard};
 use std::thread;
 use vorbis;
 
-use metadata::{FileFormat, Track, TrackRef};
+use metadata::{FileFormat, Track, TrackRef, Artist, Album};
 use session::{Bitrate, Session};
 use audio_decrypt::AudioDecrypt;
 use util::{self, SpotifyId, Subfile};
@@ -153,6 +153,11 @@ impl PlayerInternal {
                     drop(decoder);
 
                     let mut track = self.session.metadata::<Track>(track_id).await().unwrap();
+                    let mut album = self.session.metadata::<Album>(track.album).await().unwrap();
+                    let mut artist = self.session.metadata::<Artist>(album.artists[0]).await().unwrap();
+                    println!("{}", track.name);
+                    println!("{}", album.name);
+                    println!("{}", artist.name);
 
                     if !track.available {
                         let alternatives = track.alternatives
